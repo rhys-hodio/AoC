@@ -75,7 +75,7 @@ for num in drawn_numbers:
                 break
     if last_grid is not None and num_just_called is not None:
         break
-print(grids_cpy2)
+    
 if last_grid is not None and num_just_called is not None:
     grid_sum = sum([sum(i) for i in last_grid]) // 2
     ans_2 = grid_sum * num_just_called

@@ -59,6 +59,7 @@ for line in lines:
             add_coord(coord[0], coord[1])
 
 cnt = 0
+
 for x, y_positions in coords.items():
     for y_position, value in y_positions.items():
         if value >= 2:

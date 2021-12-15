@@ -1,5 +1,6 @@
 import queue
 import re
+from  collections import defaultdict
 
 with open("passage.txt") as f:
     lines = f.readlines()
@@ -16,25 +17,53 @@ for line in lines:
     else:
         children[y] = [x]
 
-paths_cnt = 0
-for node in children['start']:
-    frontier = queue.Queue()
-    frontier.put(node)
-    print(node)
-    while not frontier.empty():
-        current = frontier.get()
-        print("current=" + current)
-        childs = children[current]
-        for next in childs:
-            print(next)
-            if next == 'end':
-                paths_cnt += 1
-            elif next == 'start' or (current.islower() and next.islower()):
-                continue
-            else:
-                if next.islower() and next in frontier.queue:
-                    continue
-                else:
-                    frontier.put(next)
+def small_cave_cond(path, next):
+    cond = False
+    d = defaultdict(int)
+    for x in path: d[x] += 1
+    if next.isupper() or d[next] == 0:
+        return cond
+    else:
+        for key, value in d.items():
+            if key.islower() and value >= 2:
+                cond = True
+        return cond  
 
-print(paths_cnt)
+
+
+paths1 = []
+def DFS1(node, path):
+    path.append(node)
+    childs = children[node]
+    for next in childs:
+        if next == 'start':
+            continue
+        elif next == 'end':
+            paths1.append(path + ['end'])
+        elif next in path and next.islower():
+            continue
+        else:         
+            DFS1(next, path.copy())
+paths2 = []
+def DFS2(node, path):
+    path.append(node)
+    childs = children[node]
+    for next in childs:
+        if next == 'start':
+            continue
+        elif next == 'end':
+            paths2.append(path + ['end'])
+        elif small_cave_cond(path.copy(), next):
+            continue
+        else:         
+            DFS2(next, path.copy())
+
+
+
+DFS1('start', [])
+ans_1 = len(paths1)
+print(ans_1)
+
+DFS2('start', [])
+ans_2 = len(paths2)
+print(ans_2)

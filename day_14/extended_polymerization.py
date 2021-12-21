@@ -5,49 +5,42 @@ with open("polymer.txt") as f:
     lines = f.readlines()
 
 chain = list(lines[0].strip())
-
+chain_pairs = [''.join(p) for p in zip(chain, chain[1:])]
+missed_letter = chain[-1]
 
 insertions = {}
 for line in lines[2:]:
     pair, insert = re.match(r'([A-Z]+) -> ([A-Z])', line.strip()).groups()
     insertions[pair] = insert
 
-chain1 = chain.copy()
+d_cnt = defaultdict(int)
+for x in chain_pairs: d_cnt[x] += 1
 for step in range(10):
-    post_insert = {}
-    for i in range(len(chain1) - 1):
-        pair = chain1[i] + chain1[i+1]
-        if pair in insertions:
-            post_insert[i+1] = insertions[pair]
-    ordered_keys = sorted(post_insert.keys())
-    num_insertions = 0
-    for key in ordered_keys:
-        value = post_insert[key]
-        chain1.insert(key+num_insertions, value)
-        num_insertions += 1
+    d_cnt_new = {key: 0 for key in insertions.keys()}
+    for key, value in d_cnt.items():
+        insert = insertions[key]
+        d_cnt_new[key[0]+insert] += value
+        d_cnt_new[insert+key[1]] += value
+    d_cnt = d_cnt_new
 
-
-d = defaultdict(int)
-for x in chain1: d[x] += 1
-ans_1 = max(d.values()) - min(d.values())
+letter_cnt = defaultdict(int)
+for key, value in d_cnt.items(): letter_cnt[key[0]] += value
+letter_cnt[missed_letter] += 1
+ans_1 = max(letter_cnt.values()) - min(letter_cnt.values())
 print(ans_1)
 
-chain2 = chain.copy()
+d_cnt = defaultdict(int)
+for x in chain_pairs: d_cnt[x] += 1
 for step in range(40):
-    post_insert = {}
-    for i in range(len(chain2) - 1):
-        pair = chain2[i] + chain2[i+1]
-        if pair in insertions:
-            post_insert[i+1] = insertions[pair]
-    ordered_keys = sorted(post_insert.keys())
-    num_insertions = 0
-    for key in ordered_keys:
-        value = post_insert[key]
-        chain2.insert(key+num_insertions, value)
-        num_insertions += 1
+    d_cnt_new = {key: 0 for key in insertions.keys()}
+    for key, value in d_cnt.items():
+        insert = insertions[key]
+        d_cnt_new[key[0]+insert] += value
+        d_cnt_new[insert+key[1]] += value
+    d_cnt = d_cnt_new
 
-
-d = defaultdict(int)
-for x in chain2: d[x] += 1
-ans_2 = max(d.values()) - min(d.values())
+letter_cnt = defaultdict(int)
+for key, value in d_cnt.items(): letter_cnt[key[0]] += value
+letter_cnt[missed_letter] += 1
+ans_2 = max(letter_cnt.values()) - min(letter_cnt.values())
 print(ans_2)
